@@ -2,8 +2,12 @@ import BlogFeed from "../components/BlogFeed";
 import Navbar from "../components/NavBar";
 import { useState } from "react";
 
-export default function Blog() {
-  const [searchquery, setSearchquery] = useState("");
+interface BlogProps {
+  searchquery: string;
+  setSearchquery: (value: string) => void;
+}
+
+export default function Blog({ searchquery, setSearchquery }: BlogProps) {
   return (
     <div className="bg-gradient-to-br from-[#f5f6fa] to-[#e5e9f2] min-h-screen">
       <Navbar searchquery={searchquery} setSearchquery={setSearchquery} />

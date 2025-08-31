@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { useState } from "react";
 import "./App.css";
 import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
@@ -10,6 +11,7 @@ import YourBlogs from "./pages/YourBlogs";
 import Edit from "./pages/Edit";
 
 function App() {
+  const [searchquery, setSearchquery] = useState("");
   return (
     <BrowserRouter>
       <Routes>
@@ -17,9 +19,22 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/blog/:id" element={<BlogPost />} />
-        <Route path="/blogs" element={<Blog />} />
+        <Route
+          path="/blogs"
+          element={
+            <Blog searchquery={searchquery} setSearchquery={setSearchquery} />
+          }
+        />
         <Route path="/new-story" element={<BlogWriting />} />
-        <Route path="/your-blogs" element={<YourBlogs />} />
+        <Route
+          path="/your-blogs"
+          element={
+            <YourBlogs
+              searchquery={searchquery}
+              setSearchquery={setSearchquery}
+            />
+          }
+        />
         <Route path="/edit-blog/:id" element={<Edit></Edit>} />
       </Routes>
     </BrowserRouter>

@@ -21,7 +21,11 @@ const Client = axios.create({
   baseURL: "",
 });
 
-const YourBlogPosts: React.FC = () => {
+interface YourBlogPostsQuery {
+  searchquery: string;
+}
+
+const YourBlogPosts = ({ searchquery }: YourBlogPostsQuery) => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -53,6 +57,17 @@ const YourBlogPosts: React.FC = () => {
     getPosts();
   }, []);
 
+  const filteredArticles = articles.filter((article) => {
+    const title = article.title || "";
+
+    const content = article.content || "";
+
+    return (
+      title.toLowerCase().includes(searchquery.toLowerCase()) ||
+      content.toLowerCase().includes(searchquery.toLowerCase())
+    );
+  });
+
   return (
     <div className="bg-gradient-to-br from-[#f5f6fa] to-[#e5e9f2] min-h-screen py-20 px-2 sm:px-6">
       <div className="max-w-4xl mx-auto">
@@ -61,7 +76,7 @@ const YourBlogPosts: React.FC = () => {
         </h1>
 
         <div className="space-y-12">
-          {articles.map((article) => (
+          {filteredArticles.map((article) => (
             <div
               key={article.id}
               onClick={() => navigate(`/edit-blog/${article.id}`)}
