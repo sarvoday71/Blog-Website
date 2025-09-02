@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
-import userRoute from './routes/user'
-import blogRoute from './routes/blog'
+import userRoute from './routes/user/index'
+import blogRoute from './routes/blog/index';
 import { cors } from 'hono/cors';
 
 

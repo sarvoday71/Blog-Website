@@ -66,6 +66,21 @@ const BlogFeed: React.FC<BlogFeedQuery> = ({ searchquery }) => {
     );
   });
 
+  if (!filteredArticles.length && !loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#f5f6fa] to-[#e5e9f2] py-16 px-2 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            No articles found
+          </h1>
+          <p className="text-gray-600">
+            Try adjusting your search or check back later for new content.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gradient-to-br from-[#f5f6fa] to-[#e5e9f2] min-h-screen py-20 px-2 sm:px-6">
       <div className="max-w-4xl mx-auto">

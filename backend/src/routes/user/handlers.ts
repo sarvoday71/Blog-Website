@@ -1,22 +1,12 @@
-import { Hono } from 'hono'
-import { PrismaClient } from '@prisma/client/edge'
-import { withAccelerate } from '@prisma/extension-accelerate'
-import { decode, sign, verify } from 'hono/jwt'
+import { Context } from 'hono'
+import { sign } from 'hono/jwt'
 import bcrypt from 'bcryptjs'
-import { signinInput, signupInput } from '@sarvoday17/common'
+import { signinInput, signupInput } from './validator'
+import { getPrismaClientOne } from '../../lib/prisma'
 
 
-const userRoute = new Hono<{
-    Bindings: {
-        DATABASE_URL: string;
-        JWT_SECRET: string;
-    }
-}>()
-
-userRoute.post('/signup', async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+export const signUpFuntion = async (c: Context<{ Bindings: { DATABASE_URL: string; JWT_SECRET: string } }>) => {
+    const prisma = getPrismaClientOne(c.env.DATABASE_URL);
     try {
         const body = await c.req.json();
         const { success } = signinInput.safeParse(body);
@@ -61,16 +51,12 @@ userRoute.post('/signup', async (c) => {
         });
     }
 
-})
+}
 
 
 
-
-
-userRoute.post('/signin', async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+export const signInFunction = async (c: Context<{ Bindings: { DATABASE_URL: string; JWT_SECRET: string } }>) => {
+    const prisma = getPrismaClientOne(c.env.DATABASE_URL);
 
     try {
         const body = await c.req.json();
@@ -105,6 +91,4 @@ userRoute.post('/signin', async (c) => {
         });
     }
 
-})
-
-export default userRoute;
+}

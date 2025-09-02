@@ -1,47 +1,11 @@
-import { Hono } from 'hono'
-import { PrismaClient } from '@prisma/client/edge'
-import { withAccelerate } from '@prisma/extension-accelerate'
-import { decode, sign, verify } from 'hono/jwt'
-import { createPostInput, updatePostInput } from '@sarvoday17/common'
+import { Context } from 'hono'
+import { createPostInput, updatePostInput } from './validators'
+import { getPrismaClientOne } from '../../lib/prisma'
 
-const blogRoute = new Hono<{
-    Bindings: {
-        DATABASE_URL: string;
-        JWT_SECRET: string;
-    }
-    Variables: {
-        authId: string
-    }
-}>()
-
-blogRoute.use('/*', async (c, next) => {
-    const authHeader = c.req.header("Authorization") || "";
-    try {
-        const user = await verify(authHeader, c.env.JWT_SECRET);
-
-        if (user && typeof user === 'object' && 'id' in user && typeof user.id === 'string') {
-            c.set('authId', user.id);
-            await next();
-        } else {
-            c.status(403);
-            return c.text("You are not logged in");
-        }
-
-    } catch (error) {
-        console.log(error);
-        c.status(403);
-        return c.text("Authorization failed for given user");
-    }
-
-})
-
-blogRoute.get('/bulk', async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+export const getAllBlogs = async (c: Context<{ Bindings: { DATABASE_URL: string; JWT_SECRET: string }, Variables: { authId: string } }>) => {
+    const prisma = getPrismaClientOne(c.env.DATABASE_URL);
 
     try {
-
         const posts = await prisma.post.findMany({
             where: {
                 isPublished: true
@@ -63,12 +27,10 @@ blogRoute.get('/bulk', async (c) => {
     }
 
 
-})
+}
 
-blogRoute.get('/author', async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate());
+export const authorBlogs = async (c: Context<{ Bindings: { DATABASE_URL: string; JWT_SECRET: string }, Variables: { authId: string } }>) => {
+    const prisma = getPrismaClientOne(c.env.DATABASE_URL);
 
     try {
         console.log("entering in the try block");
@@ -90,12 +52,10 @@ blogRoute.get('/author', async (c) => {
         c.status(404);
         return c.text("Unable to find post for given author")
     }
-})
+}
 
-blogRoute.get('/:id', async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+export const getBlogByID = async (c: Context<{ Bindings: { DATABASE_URL: string; JWT_SECRET: string }, Variables: { authId: string } }>) => {
+    const prisma = getPrismaClientOne(c.env.DATABASE_URL);
 
     try {
         const id = c.req.param('id');
@@ -121,13 +81,12 @@ blogRoute.get('/:id', async (c) => {
         console.log(error);
         return c.text("Unable to found post with provided id");
     }
-})
+}
 
 
-blogRoute.post('/', async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+export const blogPost = async (c: Context<{ Bindings: { DATABASE_URL: string; JWT_SECRET: string }, Variables: { authId: string } }>) => {
+
+    const prisma = getPrismaClientOne(c.env.DATABASE_URL);
 
     try {
         const body = await c.req.json();
@@ -153,12 +112,11 @@ blogRoute.post('/', async (c) => {
         return c.text("unable to create blog post");
     }
 
-})
+}
 
-blogRoute.put('/', async (c) => {
-    const prisma = new PrismaClient({
-        datasourceUrl: c.env.DATABASE_URL,
-    }).$extends(withAccelerate())
+export const blogPut = async (c: Context<{ Bindings: { DATABASE_URL: string; JWT_SECRET: string }, Variables: { authId: string } }>) => {
+
+    const prisma = getPrismaClientOne(c.env.DATABASE_URL);
 
     try {
         const body = await c.req.json();
@@ -186,11 +144,4 @@ blogRoute.put('/', async (c) => {
         return c.text("Error while updating the post");
     }
 
-})
-
-
-
-
-
-
-export default blogRoute;
+}
