@@ -1,6 +1,5 @@
 import BlogFeed from "../components/BlogFeed";
 import Navbar from "../components/NavBar";
-import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 interface BlogProps {

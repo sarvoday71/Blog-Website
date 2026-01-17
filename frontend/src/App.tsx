@@ -18,14 +18,30 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
-        <Route path="/blog/:id" element={<BlogPost />} />
+        <Route
+          path="/blog/:id"
+          element={
+            <BlogPost
+              searchquery={searchquery}
+              setSearchquery={setSearchquery}
+            />
+          }
+        />
         <Route
           path="/blogs"
           element={
             <Blog searchquery={searchquery} setSearchquery={setSearchquery} />
           }
         />
-        <Route path="/new-story" element={<BlogWriting />} />
+        <Route
+          path="/new-story"
+          element={
+            <BlogWriting
+              searchquery={searchquery}
+              setSearchquery={setSearchquery}
+            />
+          }
+        />
         <Route
           path="/your-blogs"
           element={
@@ -35,7 +51,15 @@ function App() {
             />
           }
         />
-        <Route path="/edit-blog/:id" element={<Edit></Edit>} />
+        <Route
+          path="/edit-blog/:id"
+          element={
+            <Edit
+              searchquery={searchquery}
+              setSearchquery={setSearchquery}
+            ></Edit>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
