@@ -23,7 +23,7 @@ function calculateReadTime(text: string): string {
 }
 
 const Client = axios.create({
-  baseURL: "http://localhost:8787/api/v1/blog/bulk",
+  baseURL: "https://backend.sarvodayjadhav17.workers.dev/api/v1/blog/bulk",
 });
 
 const BlogFeed: React.FC<BlogFeedQuery> = ({ searchquery }) => {

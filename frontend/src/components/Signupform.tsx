@@ -24,8 +24,8 @@ function SignupForm() {
     setLoading(true);
     try {
       const data = await axios.post(
-        "http://localhost:8787/api/v1/user/signup",
-        reqBody
+        "https://backend.sarvodayjadhav17.workers.dev/api/v1/user/signup",
+        reqBody,
       );
       console.log(data);
       localStorage.setItem("token", data.data.jwt);
@@ -94,8 +94,8 @@ function LableComponent({ type, value, onchange }: lablecomp) {
         {type === "username"
           ? "Username"
           : type === "password"
-          ? "Password"
-          : "Email"}
+            ? "Password"
+            : "Email"}
       </label>
       <input
         id={type}
@@ -105,8 +105,8 @@ function LableComponent({ type, value, onchange }: lablecomp) {
           type === "username"
             ? "Enter your Username"
             : type === "email"
-            ? "m@example.com"
-            : ""
+              ? "m@example.com"
+              : ""
         }
         onChange={(e) => onchange(e.target.value)}
         className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50 text-gray-900 text-base shadow-sm transition-all"

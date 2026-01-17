@@ -36,12 +36,12 @@ const YourBlogPosts = ({ searchquery }: YourBlogPostsQuery) => {
       setLoading(true);
       const jwtToken = localStorage.getItem("token");
       const response = await Client.delete(
-        `http://localhost:8787/api/v1/blog/dlt/${id}`,
+        `https://backend.sarvodayjadhav17.workers.dev/api/v1/blog/dlt/${id}`,
         {
           headers: {
             Authorization: jwtToken,
           },
-        }
+        },
       );
       console.log(response);
       alert("Post Deleted Successfully");
@@ -62,18 +62,18 @@ const YourBlogPosts = ({ searchquery }: YourBlogPostsQuery) => {
           const jwtToken = localStorage.getItem("token");
           setLoading(true);
           const response = await Client.get(
-            `http://localhost:8787/api/v1/blog/author`,
+            `https://backend.sarvodayjadhav17.workers.dev/api/v1/blog/author`,
             {
               headers: {
                 Authorization: jwtToken,
               },
-            }
+            },
           );
           setArticles(response.data.posts);
           // implementation of caching
           localStorage.setItem(
             "your-posts",
-            JSON.stringify(response.data.posts)
+            JSON.stringify(response.data.posts),
           );
         } else {
           setArticles(JSON.parse(localData));

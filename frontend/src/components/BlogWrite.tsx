@@ -20,7 +20,7 @@ const BlogWrite: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setPost((prev) => ({ ...prev, [name]: value }));
@@ -33,13 +33,13 @@ const BlogWrite: React.FC = () => {
       setLoading(true);
       const jwtToken = localStorage.getItem("token");
       const response = await axios.post(
-        "http://localhost:8787/api/v1/blog",
+        "https://backend.sarvodayjadhav17.workers.dev/api/v1/blog",
         post,
         {
           headers: {
             Authorization: jwtToken,
           },
-        }
+        },
       );
       console.log(response.data);
       setSubmitted(true);

@@ -36,12 +36,12 @@ const PostCard: React.FC = () => {
       try {
         const jwtToken = localStorage.getItem("token");
         const response = await axios.get(
-          `http://localhost:8787/api/v1/blog/${id}`,
+          `https://backend.sarvodayjadhav17.workers.dev/api/v1/blog/${id}`,
           {
             headers: {
               Authorization: jwtToken,
             },
-          }
+          },
         );
         setPost(response.data);
         console.log(post);
