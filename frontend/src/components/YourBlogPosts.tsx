@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Loader from "./loader";
 
 interface Article {
@@ -28,23 +28,56 @@ interface YourBlogPostsQuery {
 const YourBlogPosts = ({ searchquery }: YourBlogPostsQuery) => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
+  const [toggle, setToggle] = useState(false);
   const navigate = useNavigate();
+
+  async function handleOnclick(id: string) {
+    try {
+      setLoading(true);
+      const jwtToken = localStorage.getItem("token");
+      const response = await Client.delete(
+        `http://localhost:8787/api/v1/blog/dlt/${id}`,
+        {
+          headers: {
+            Authorization: jwtToken,
+          },
+        }
+      );
+      console.log(response);
+      alert("Post Deleted Successfully");
+    } catch (e) {
+      console.log(e);
+      alert("Error while Deleting the post");
+    } finally {
+      setLoading(false);
+      setToggle(!toggle);
+    }
+  }
 
   useEffect(() => {
     async function getPosts() {
       try {
-        const jwtToken = localStorage.getItem("token");
-        setLoading(true);
-        const response = await Client.get(
-          `http://localhost:8787/api/v1/blog/author`,
-          {
-            headers: {
-              Authorization: jwtToken,
-            },
-          }
-        );
-        setArticles(response.data.posts);
-
+        const localData = localStorage.getItem("your-posts");
+        if (!localData) {
+          const jwtToken = localStorage.getItem("token");
+          setLoading(true);
+          const response = await Client.get(
+            `http://localhost:8787/api/v1/blog/author`,
+            {
+              headers: {
+                Authorization: jwtToken,
+              },
+            }
+          );
+          setArticles(response.data.posts);
+          // implementation of caching
+          localStorage.setItem(
+            "your-posts",
+            JSON.stringify(response.data.posts)
+          );
+        } else {
+          setArticles(JSON.parse(localData));
+        }
         console.log(articles);
         console.log(typeof articles);
       } catch (error) {
@@ -55,7 +88,7 @@ const YourBlogPosts = ({ searchquery }: YourBlogPostsQuery) => {
       }
     }
     getPosts();
-  }, []);
+  }, [toggle]);
 
   const filteredArticles = articles.filter((article) => {
     const title = article.title || "";
@@ -94,7 +127,10 @@ const YourBlogPosts = ({ searchquery }: YourBlogPostsQuery) => {
           {filteredArticles.map((article) => (
             <div
               key={article.id}
-              onClick={() => navigate(`/edit-blog/${article.id}`)}
+              onClick={() => {
+                localStorage.removeItem("your-posts");
+                navigate(`/edit-blog/${article.id}`);
+              }}
               className="group bg-white/90 border border-gray-200 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 flex flex-col sm:flex-row items-stretch overflow-hidden hover:scale-[1.015]"
             >
               <div className="flex-1 p-8 flex flex-col justify-between">
@@ -112,7 +148,7 @@ const YourBlogPosts = ({ searchquery }: YourBlogPostsQuery) => {
                   </span>
                 </div>
               </div>
-              <div className="hidden sm:flex items-center justify-center bg-gradient-to-br from-[#e0e7ff] to-[#f0f4ff] w-40 min-h-full">
+              <div className="hidden sm:flex items-center justify-center bg-gradient-to-br from-[#e0e7ff] to-[#f0f4ff] w-40 min-h-full flex-col gap-8 ">
                 <svg width="60" height="60" fill="none" viewBox="0 0 60 60">
                   <circle
                     cx="30"
@@ -129,6 +165,18 @@ const YourBlogPosts = ({ searchquery }: YourBlogPostsQuery) => {
                     strokeLinecap="round"
                   />
                 </svg>
+                <div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      localStorage.removeItem("your-posts");
+                      handleOnclick(article.id.toString());
+                    }}
+                    className="px-4 py-2 rounded-lg bg-red-500 text-white font-semibold shadow hover:bg-red-900 cursor-pointer transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 active:scale-95"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
           ))}

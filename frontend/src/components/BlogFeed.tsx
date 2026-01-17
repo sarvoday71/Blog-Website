@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Loader from "./loader";
+import { useQuery } from "@tanstack/react-query";
 
 interface Article {
   id: number;
@@ -26,37 +27,56 @@ const Client = axios.create({
 });
 
 const BlogFeed: React.FC<BlogFeedQuery> = ({ searchquery }) => {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(false);
+  // const [articles, setArticles] = useState<Article[]>([]);
+  // const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function getPosts() {
+  const { data, isLoading } = useQuery<Article[]>({
+    queryKey: ["article"],
+    queryFn: async function getData(): Promise<Article[]> {
       try {
         const jwtToken = localStorage.getItem("token");
-        setLoading(true);
+
         const response = await Client.get("", {
           headers: {
             Authorization: jwtToken,
           },
         });
-        setArticles(response.data.posts);
-
-        console.log(articles);
-        console.log(typeof articles);
+        return response.data.posts;
       } catch (error) {
         alert("Error while fetching blog posts.");
-        console.log(error);
-      } finally {
-        setLoading(false);
+        return [];
       }
-    }
-    getPosts();
-  }, []);
+    },
+  });
 
-  const filteredArticles = articles.filter((article) => {
+  // useEffect(() => {
+  //   async function getPosts() {
+  //     try {
+  //       const jwtToken = localStorage.getItem("token");
+  //       setLoading(true);
+  //       const response = await Client.get("", {
+  //         headers: {
+  //           Authorization: jwtToken,
+  //         },
+  //       });
+  //       setArticles(response.data.posts);
+
+  //       console.log(articles);
+  //       console.log(typeof articles);
+  //     } catch (error) {
+  //       alert("Error while fetching blog posts.");
+  //       console.log(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+  //   getPosts();
+  // }, []);
+
+  const filteredArticles = (data ? data : []).filter((article) => {
     const title = article.title || "";
-    const author = article.author.name || "";
+    const author = article.author?.name || "";
     const content = article.content || "";
 
     return (
@@ -66,7 +86,7 @@ const BlogFeed: React.FC<BlogFeedQuery> = ({ searchquery }) => {
     );
   });
 
-  if (!filteredArticles.length && !loading) {
+  if (!filteredArticles && !isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f5f6fa] to-[#e5e9f2] py-16 px-2 flex items-center justify-center">
         <div className="text-center">
@@ -85,11 +105,11 @@ const BlogFeed: React.FC<BlogFeedQuery> = ({ searchquery }) => {
     <div className="bg-gradient-to-br from-[#f5f6fa] to-[#e5e9f2] min-h-screen py-20 px-2 sm:px-6">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-6xl font-black text-gray-900 mb-14 text-center tracking-tight drop-shadow-xl leading-tight">
-          {loading ? <Loader></Loader> : "Discover. Read. Inspire."}
+          {isLoading ? <Loader></Loader> : "Discover. Read. Inspire."}
         </h1>
 
         <div className="space-y-12">
-          {filteredArticles.map((article) => (
+          {filteredArticles?.map((article) => (
             <div
               key={article.id}
               onClick={() => navigate(`/blog/${article.id}`)}

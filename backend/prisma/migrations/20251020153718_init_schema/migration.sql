@@ -14,7 +14,7 @@ CREATE TABLE "Post" (
     "title" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "authorid" TEXT NOT NULL,
-    "isPublished" BOOLEAN NOT NULL,
+    "isPublished" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Post_pkey" PRIMARY KEY ("id")
 );

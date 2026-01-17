@@ -17,3 +17,4 @@ app.route('/api/v1/blog', blogRoute);
 export default app
 
 
+// Deployed backend url: https://backend.sarvodayjadhav17.workers.dev/

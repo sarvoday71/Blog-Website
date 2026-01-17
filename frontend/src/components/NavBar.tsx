@@ -9,6 +9,7 @@ const Navbar = ({ searchquery, setSearchquery }: Query) => {
   const navigate = useNavigate();
   const location = useLocation();
   function handleOnclick() {
+    localStorage.removeItem("your-posts");
     navigate("/new-story");
   }
 
@@ -18,6 +19,12 @@ const Navbar = ({ searchquery, setSearchquery }: Query) => {
 
   function handleOnchange(e: React.ChangeEvent<HTMLInputElement>) {
     setSearchquery(e.target.value);
+  }
+
+  function handleSignOut() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("your-posts");
+    navigate("/signin");
   }
   return (
     <nav className="bg-white/80 backdrop-blur-lg border-b border-gray-200 shadow-lg sticky top-0 z-50 transition-all">
@@ -77,6 +84,7 @@ const Navbar = ({ searchquery, setSearchquery }: Query) => {
           )}
         </div>
         {/* Write/Sign In Button */}
+        {/* ...existing code... */}
         <button
           onClick={handleOnclick}
           className={`px-7 py-2 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold text-base shadow-xl hover:from-blue-700 hover:to-blue-500 transition-all duration-200 border-2 border-blue-100 hover:border-blue-300 ${
@@ -85,6 +93,29 @@ const Navbar = ({ searchquery, setSearchquery }: Query) => {
         >
           Write
         </button>
+
+        <div>
+          <button
+            className="ml-4 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold text-base shadow-lg hover:from-red-600 hover:to-pink-600 transition-all duration-200 border-2 border-red-100 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-400 active:scale-95"
+            title="Sign Out"
+            onClick={handleSignOut}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h6a2 2 0 012 2v1"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
     </nav>
   );

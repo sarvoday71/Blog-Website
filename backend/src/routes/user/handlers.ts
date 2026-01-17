@@ -5,7 +5,9 @@ import { signinInput, signupInput } from './validator'
 import { getPrismaClientOne } from '../../lib/prisma'
 
 
+
 export const signUpFuntion = async (c: Context<{ Bindings: { DATABASE_URL: string; JWT_SECRET: string } }>) => {
+    console.log(c.env.DATABASE_URL);
     const prisma = getPrismaClientOne(c.env.DATABASE_URL);
     try {
         const body = await c.req.json();
@@ -18,13 +20,13 @@ export const signUpFuntion = async (c: Context<{ Bindings: { DATABASE_URL: strin
         }
         const email = body['email']
 
-        const finding = await prisma.users.findMany({
+        const finding = await prisma.users.findUnique({
             where: {
                 email: email
             }
         })
 
-        if (finding.length > 0) {
+        if (finding) {
             c.status(411);
             return c.text('User with provided email already exists !');
         }

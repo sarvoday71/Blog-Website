@@ -145,3 +145,22 @@ export const blogPut = async (c: Context<{ Bindings: { DATABASE_URL: string; JWT
     }
 
 }
+
+export const deleteBlogPost = async (c: Context<{ Bindings: { DATABASE_URL: string; JWT_SECRET: string }, Variables: { authId: string } }>) => {
+    const prisma = getPrismaClientOne(c.env.DATABASE_URL);
+    try {
+        const id = await c.req.param('id');
+        const deletePost = await prisma.post.delete({
+            where: {
+                id: id
+            }
+        })
+        console.log(deletePost);
+        c.status(200);
+        return c.json(deletePost);
+    } catch (error) {
+        console.log(error);
+        c.status(404);
+        return c.text("Unable to delete the blog post.")
+    }
+}
